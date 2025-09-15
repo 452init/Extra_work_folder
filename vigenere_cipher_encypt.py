@@ -33,32 +33,3 @@ else:
 	final_result = ''.join(result)
 
 	print(f'{final_result}')
-
-#def decription_vigenere(cipher, key):
-#	'''decription of vignere cipher'''
-#	if not key:
-#		return cipher
-#
-#	alphabets = 'abcdefghijklmnopqrstuvwxyz'
-#	result = []
-#	key_index = 0
-#	char_pos = {x: pos for pos, x in enumerate(alphabets)}
-
-#	for char in cipher:
-#		if char.isalpha():
-			# shift cipher letter by letter to plain text
-#			shift = alphabets.index(key[key_index] % len(key).lower())
-
-#			char_pos = char_pos.get(char)
-
-#			plain_text = (char_pos - shift) % 26
-
-#			result.append(alphabets[plain_text])
-
-#			key_index += 1
-#		elif char.isupper() and char.isalpha():
-#			result.append(char)
-
-#		else:
-#			raise ValueError('Not a character)
-#	return ''.join(result)
