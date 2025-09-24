@@ -8,8 +8,8 @@ def prime_factors_generator(n):
 		while n % num == 0:
 			yield num
 			n = n//num
-	if n % num != 0 and n > 1:
+	if n > 1:
 		yield n
 
-for factor in prime_factors_generator(35):
+for factor in prime_factors_generator(60):
 	print(factor)
