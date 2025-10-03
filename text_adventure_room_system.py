@@ -35,7 +35,7 @@ class Player:
         self.inventory.append(item)
 
     def pick_up(self, item_name):
-        for item in current_room.items:
+        for item in self.current_room.items:
             if item.name == item_name and item.can_take:
                 self.inventory.append(item)
                 self.current_room.items.remove(item)
@@ -43,11 +43,11 @@ class Player:
         return "Can't pick that up"
 
     def drop(self, drop_item):
-        for item in current_room.inventory:
+        for item in self.inventory:
             if inventory:
                 self.drop_item = Player.inventory.pop(item)
                 current_room.items.append(drop_item[item])
-                return current_room.items
+                return 'You dropped{item}'
         return 'Empty inventory no item to drop!'
 
 class Item:
@@ -63,8 +63,10 @@ hallway.add_exit('south', kitchen)
 
 hero = Player('Hero', kitchen)
 villian = Player('Villian', hallway)
-hero.addInventory('sword')
-villian.addInventory('shield')
+sword = Item('sword')
+hero.addInventory(sword)
+shield = Item('shield')
+villian.addInventory(shield)
 
 print(villian.inventory)
 
@@ -72,6 +74,7 @@ player = Player('Hero', kitchen)
 print(player.current_room.name)
 player.move('north')
 print(player.current_room.name)
+print(type(hero.inventory[0]))
 
 """ Implement the basic Room class """
 """Add a Player class that tracks current location"""
