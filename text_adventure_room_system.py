@@ -42,13 +42,13 @@ class Player:
                 return f'You picked up {item_name}'
         return "Can't pick that up"
 
-    def drop(self, drop_item):
+    def drop(self, dropped_item):
         for item in self.inventory:
-            if inventory:
-                self.drop_item = Player.inventory.pop(item)
-                current_room.items.append(drop_item[item])
-                return 'You dropped{item}'
-        return 'Empty inventory no item to drop!'
+            if item.name == item_name:
+                self.inventory.remove(item)
+                self.current_room.items.append(item)
+                return 'You have droped an item'
+        return "You don't have that item!"
 
 class Item:
     def __init__(self, name, can_take=True):
@@ -75,8 +75,3 @@ print(player.current_room.name)
 player.move('north')
 print(player.current_room.name)
 print(type(hero.inventory[0]))
-
-""" Implement the basic Room class """
-"""Add a Player class that tracks current location"""
-"""Add methods for moving between rooms"""
-"""Bonus: How would you handle locked doors?"""
