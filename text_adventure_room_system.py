@@ -20,40 +20,61 @@ class Room:
         return ', '.join([self.name, self.description, item_names, enter_room])
 
 class Player:
-    def __init__(self, name, starting_room):
+    def __init__(self, name, starting_room, max_weight=10, required_key='key'):
         self.name = name
         self.current_room = starting_room
         self.inventory = []
+        self.max_weight = max_weight
+        self.required_key = required_key
 
-    def move(self, direction):
-        if direction in self.current_room.exits:
+    def current_weight(self):
+        total = 0
+        for item in self.inventory:
+            total += item.weight
+        return total
+
+    def move(self, direction, provided_key):
+        self.provided_key = provided_key
+        if direction in self.current_room.exits and self.provided_key == self.required_key:
             self.current_room = self.current_room.exits[direction]
-            return f'You move {direction}'
-        return "You can't go that way!"
+            print(f'You move {direction}')
+        print("You can't go that way!")
     
     def addInventory(self, item):
         self.inventory.append(item)
 
     def pick_up(self, item_name):
         for item in self.current_room.items:
-            if item.name == item_name and item.can_take:
-                self.inventory.append(item)
-                self.current_room.items.remove(item)
-                return f'You picked up {item_name}'
-        return "Can't pick that up"
+            if item.weight > self.max_weight:
+                return "Too heavy to carry!"
+            else:
+                if item.name == item_name and item.can_take:
+                    self.inventory.append(item)
+                    self.current_room.items.remove(item)
+                    return f'You picked up {item_name}'
+            return "Can't pick that up"
 
-    def drop(self, dropped_item):
-        for item in self.inventory:
-            if item.name == item_name:
+    def drop(self, drop_item):
+        for item in self.inventory: # checks if item can be reamoved from the inventory
+            if item.name == drop_item:
                 self.inventory.remove(item)
-                self.current_room.items.append(item)
-                return 'You have droped an item'
+                self.current_room.items.append(item) #adds items to the self.items list from the inventory
+                return 'You have dropped an item'
         return "You don't have that item!"
 
 class Item:
-    def __init__(self, name, can_take=True):
+    def __init__(self, name, weight=1, can_take=True):
         self.name = name
+        self.weight = weight
         self.can_take = can_take
+
+class Container:
+    def __init__(self):
+        self.chest = []
+
+    def addItemsToChest(self):
+        self.chest.extend(self.current_room.items)
+
 
 # Usage would look like:
 kitchen = Room("Kitchen", "A messy kitchen with dishes everywhere")
@@ -70,8 +91,9 @@ villian.addInventory(shield)
 
 print(villian.inventory)
 
-player = Player('Hero', kitchen)
+player = Player('Hero', kitchen, 'key')
 print(player.current_room.name)
-player.move('north')
+player.move('north', 'big')
 print(player.current_room.name)
 print(type(hero.inventory[0]))
+print(hero.inventory[0].weight)
