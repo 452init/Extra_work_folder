@@ -38,7 +38,8 @@ class Player:
         if direction in self.current_room.exits and self.provided_key == self.required_key:
             self.current_room = self.current_room.exits[direction]
             print(f'You move {direction}')
-        print("You can't go that way!")
+        else:
+            print("You can't go that way!")
     
     def addInventory(self, item):
         self.inventory.append(item)
@@ -63,10 +64,13 @@ class Player:
         return "You don't have that item!"
 
 class Item:
-    def __init__(self, name, weight=1, can_take=True):
+    def __init__(self, name, weight=1, can_take=True, description=''):
         self.name = name
         self.weight = weight
         self.can_take = can_take
+
+    def examine(self):
+        return self.description or f"It's a {self.name}"
 
 class Container:
     def __init__(self):
