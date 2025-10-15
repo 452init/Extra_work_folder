@@ -43,8 +43,8 @@ class Player:
         if direction in self.current_room.exits:
             if self.current_room.exits[direction]['locked'] == False:
                 self.current_room = self.current_room.exits[direction]['room']
-                print(f'You moved {direction} now youre in
-                      {self.current_room.name}')
+                print(f"You moved {direction} now you're in
+                {self.current_room.name}")
             elif self.current_room.exits[direction]['locked'] == True:
                 key_name = provided_key
                 if self.current_room.exits[direction]['key_name'] == self.required_key:
