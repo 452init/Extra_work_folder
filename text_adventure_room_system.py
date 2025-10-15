@@ -4,10 +4,15 @@ class Room:
         self.description = description
         self.exits = {}  # {'north': room_object, 'south': room_object}
         self.items = []
+        self.container = Container()
 
-    def add_exit(self, direction, room):
+    def add_exit(self, direction, room, locked=False, key_name=None):
         """Connect this room to another"""
-        self.exits[direction] = room
+        self.exits[direction] = {
+                'room': room,
+                'locked': locked,
+                'key_name': key_name
+                }
         # Bonus: automatically add reverse connection?
 
     def describe(self):
@@ -20,12 +25,11 @@ class Room:
         return ', '.join([self.name, self.description, item_names, enter_room])
 
 class Player:
-    def __init__(self, name, starting_room, max_weight=10, required_key='key'):
+    def __init__(self, name, starting_room, max_weight=10):
         self.name = name
         self.current_room = starting_room
         self.inventory = []
         self.max_weight = max_weight
-        self.required_key = required_key
 
     def current_weight(self):
         total = 0
@@ -33,11 +37,22 @@ class Player:
             total += item.weight
         return total
 
-    def move(self, direction, provided_key):
+    def move(self, direction, provided_key, required_key='key'):
+        self.required_key = required_key
         self.provided_key = provided_key
-        if direction in self.current_room.exits and self.provided_key == self.required_key:
-            self.current_room = self.current_room.exits[direction]
-            print(f'You move {direction}')
+        if direction in self.current_room.exits:
+            if self.current_room.exits[direction]['locked'] == False:
+                self.current_room = self.current_room.exits[direction]['room']
+                print(f'You moved {direction} now youre in
+                      {self.current_room.name}')
+            elif self.current_room.exits[direction]['locked'] == True:
+                key_name = provided_key
+                if self.current_room.exits[direction]['key_name'] == self.required_key:
+                    self.current_room = self.current_room.exits[direction]['room']
+                    print(f'You moved {direction} now youre in
+                          {self.current_room.name}')
+                else:
+                    print("Can't enter the room!")
         else:
             print("You can't go that way!")
     
@@ -45,8 +60,9 @@ class Player:
         self.inventory.append(item)
 
     def pick_up(self, item_name):
+        total_weight = self.current_weight()
         for item in self.current_room.items:
-            if item.weight > self.max_weight:
+            if (item.weight + total_weight) > self.max_weight:
                 return "Too heavy to carry!"
             else:
                 if item.name == item_name and item.can_take:
@@ -68,16 +84,18 @@ class Item:
         self.name = name
         self.weight = weight
         self.can_take = can_take
+        self.description = description
 
     def examine(self):
         return self.description or f"It's a {self.name}"
 
 class Container:
-    def __init__(self):
-        self.chest = []
+    def __init__(self, name='chest'):
+        self.name = name
+        self.items = []
 
     def addItemsToChest(self):
-        self.chest.extend(self.current_room.items)
+        return self.items.append(self.current_room.items)
 
 
 # Usage would look like:
@@ -88,16 +106,13 @@ hallway.add_exit('south', kitchen)
 
 hero = Player('Hero', kitchen)
 villian = Player('Villian', hallway)
-sword = Item('sword')
 hero.addInventory(sword)
-shield = Item('shield')
 villian.addInventory(shield)
 
-print(villian.inventory)
+sword = Item("sword", weight=5)
+potion = Item("potion", weight=0.5)
+key = Item("brass key", weight=0.1)
 
-player = Player('Hero', kitchen, 'key')
-print(player.current_room.name)
-player.move('north', 'big')
-print(player.current_room.name)
-print(type(hero.inventory[0]))
-print(hero.inventory[0].weight)
+kitchen.items.append(potion)
+hallway.items.append(sword)
+hallway.items.append(key)
