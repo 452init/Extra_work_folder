@@ -31,26 +31,33 @@ class Player:
         self.inventory = []
         self.max_weight = max_weight
 
+    def transfer_to_container(self, item_name):
+        if self.current_room.container:
+            for item in self.inventory:
+                if item.name == item_name:
+                    self.inventory.remove(item)
+                    self.current_room.container.items.append(item)
+                    return f'Put {item_name} in {self.current_room.container.name}'
+            return "You don't have that item"
+        return "No container here"
+
     def current_weight(self):
         total = 0
         for item in self.inventory:
             total += item.weight
         return total
 
-    def move(self, direction, provided_key, required_key='key'):
-        self.required_key = required_key
+    def move(self, direction, provided_key):
         self.provided_key = provided_key
         if direction in self.current_room.exits:
             if self.current_room.exits[direction]['locked'] == False:
                 self.current_room = self.current_room.exits[direction]['room']
-                print(f"You moved {direction} now you're in
-                {self.current_room.name}")
+                print(f"You moved {direction} now you're in {self.current_room.name}")
             elif self.current_room.exits[direction]['locked'] == True:
                 key_name = provided_key
-                if self.current_room.exits[direction]['key_name'] == self.required_key:
+                if self.current_room.exits[direction]['key_name'] == self.provided_key:
                     self.current_room = self.current_room.exits[direction]['room']
-                    print(f'You moved {direction} now youre in
-                          {self.current_room.name}')
+                    print(f'You moved {direction} now youre in {self.current_room.name}')
                 else:
                     print("Can't enter the room!")
         else:
@@ -106,13 +113,14 @@ hallway.add_exit('south', kitchen)
 
 hero = Player('Hero', kitchen)
 villian = Player('Villian', hallway)
-hero.addInventory(sword)
-villian.addInventory(shield)
-
-sword = Item("sword", weight=5)
 potion = Item("potion", weight=0.5)
-key = Item("brass key", weight=0.1)
+sword = Item("sword", weight=5)
+hero.addInventory(sword)
+villian.addInventory(potion)
 
 kitchen.items.append(potion)
 hallway.items.append(sword)
-hallway.items.append(key)
+hallway.items.append('key')
+
+villian.pick_up('gun')
+print(villian.inventory)
