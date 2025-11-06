@@ -3,8 +3,7 @@ import re
 
 def decode(string):
     matches = re.findall(r'(\d*)(\D)', string)
-    decoded_chars = [int(tup_char[0])*tup_char[1] if tup_char[0] else tup_char[1] for tup_char in matches]
-    print(''.join(decoded_chars))
+    print(''.join(int(count or 1)*char for count, char in matches))
 
 def encode(string):
     pass
